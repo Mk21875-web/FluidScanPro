@@ -25,6 +25,7 @@ sealed interface DashboardIntent {
     data object ToggleViewMode : DashboardIntent
     data class ExpandDocument(val id: String?) : DashboardIntent
     data class OpenInEditor(val id: String) : DashboardIntent
+    data class OpenOcr(val id: String) : DashboardIntent
     data class DeleteDocument(val id: String) : DashboardIntent
     data class SyncDocument(val id: String) : DashboardIntent
     data object NewScan : DashboardIntent
@@ -34,5 +35,6 @@ sealed interface DashboardIntent {
 sealed interface DashboardEffect {
     data object NavigateToScanner : DashboardEffect
     data class NavigateToEditor(val id: String) : DashboardEffect
+    data class NavigateToOcr(val id: String) : DashboardEffect
     data class Message(val text: String) : DashboardEffect
 }

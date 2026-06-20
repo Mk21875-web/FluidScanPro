@@ -57,6 +57,7 @@ import com.fluidscan.pro.ui.theme.FluidScanMotion
 fun DashboardScreen(
     onOpenScanner: () -> Unit,
     onOpenEditor: () -> Unit,
+    onOpenOcr: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -71,6 +72,7 @@ fun DashboardScreen(
             when (effect) {
                 DashboardEffect.NavigateToScanner -> onOpenScanner()
                 is DashboardEffect.NavigateToEditor -> onOpenEditor()
+                is DashboardEffect.NavigateToOcr -> onOpenOcr()
                 is DashboardEffect.Message -> snackbar.showSnackbar(effect.text)
             }
         }
@@ -112,6 +114,7 @@ fun DashboardScreen(
                 document = state.expandedDocument,
                 onDismiss = { viewModel.onIntent(DashboardIntent.ExpandDocument(null)) },
                 onOpen = { state.expandedDocId?.let { viewModel.onIntent(DashboardIntent.OpenInEditor(it)) } },
+                onOcr = { state.expandedDocId?.let { viewModel.onIntent(DashboardIntent.OpenOcr(it)) } },
                 onDelete = { state.expandedDocId?.let { viewModel.onIntent(DashboardIntent.DeleteDocument(it)) } }
             )
         }

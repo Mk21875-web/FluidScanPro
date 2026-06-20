@@ -63,6 +63,7 @@ class DashboardViewModel @Inject constructor(
             }
             is DashboardIntent.ExpandDocument -> _state.update { it.copy(expandedDocId = intent.id) }
             is DashboardIntent.OpenInEditor -> openInEditor(intent.id)
+            is DashboardIntent.OpenOcr -> openOcr(intent.id)
             is DashboardIntent.DeleteDocument -> delete(intent.id)
             is DashboardIntent.SyncDocument -> sync(intent.id)
             DashboardIntent.NewScan -> emit(DashboardEffect.NavigateToScanner)
@@ -76,6 +77,15 @@ class DashboardViewModel @Inject constructor(
             handoff.set(doc.pageUris.map { Uri.parse(it) }, doc.title, documentId = doc.id)
             _state.update { it.copy(expandedDocId = null) }
             emit(DashboardEffect.NavigateToEditor(id))
+        }
+    }
+
+    private fun openOcr(id: String) {
+        viewModelScope.launch {
+            val doc = repository.get(id) ?: return@launch emit(DashboardEffect.Message("Document not found"))
+            handoff.set(doc.pageUris.map { Uri.parse(it) }, doc.title, documentId = doc.id)
+            _state.update { it.copy(expandedDocId = null) }
+            emit(DashboardEffect.NavigateToOcr(id))
         }
     }
 

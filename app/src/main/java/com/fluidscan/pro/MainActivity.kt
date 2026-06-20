@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.fluidscan.pro.ui.screens.dashboard.DashboardScreen
 import com.fluidscan.pro.ui.screens.editor.EditorScreen
+import com.fluidscan.pro.ui.screens.ocr.OcrScreen
 import com.fluidscan.pro.ui.screens.scanner.ScannerScreen
 import com.fluidscan.pro.ui.theme.FluidScanTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,7 +26,8 @@ class MainActivity : ComponentActivity() {
                     composable("dashboard") {
                         DashboardScreen(
                             onOpenScanner = { navController.navigate("scanner") },
-                            onOpenEditor = { navController.navigate("editor") }
+                            onOpenEditor = { navController.navigate("editor") },
+                            onOpenOcr = { navController.navigate("ocr") }
                         )
                     }
                     composable("scanner") {
@@ -36,6 +38,9 @@ class MainActivity : ComponentActivity() {
                     composable("editor") {
                         // Pages are pulled from the scanner/import→editor handoff (ScanHandoff).
                         EditorScreen(onBack = { navController.popBackStack() })
+                    }
+                    composable("ocr") {
+                        OcrScreen(onBack = { navController.popBackStack() })
                     }
                 }
             }

@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -47,6 +48,7 @@ fun DocumentDetailSheet(
     document: Document?,
     onDismiss: () -> Unit,
     onOpen: () -> Unit,
+    onOcr: () -> Unit,
     onDelete: () -> Unit
 ) {
     AnimatedVisibility(visible = document != null, enter = fadeIn(), exit = fadeOut()) {
@@ -90,7 +92,10 @@ fun DocumentDetailSheet(
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             Button(onClick = onOpen, modifier = Modifier.weight(1f)) {
                                 Icon(Icons.Filled.Edit, contentDescription = null)
-                                Text("  Open in editor")
+                                Text("  Edit")
+                            }
+                            OutlinedButton(onClick = onOcr) {
+                                Icon(Icons.Filled.DocumentScanner, contentDescription = "OCR")
                             }
                             OutlinedButton(onClick = onDelete) {
                                 Icon(Icons.Filled.Delete, contentDescription = "Delete")
