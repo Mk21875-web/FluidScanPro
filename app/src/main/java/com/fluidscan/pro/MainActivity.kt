@@ -11,6 +11,9 @@ import com.fluidscan.pro.ui.screens.dashboard.DashboardScreen
 import com.fluidscan.pro.ui.screens.editor.EditorScreen
 import com.fluidscan.pro.ui.screens.ocr.OcrScreen
 import com.fluidscan.pro.ui.screens.scanner.ScannerScreen
+import com.fluidscan.pro.ui.screens.utilities.UtilitiesScreen
+import com.fluidscan.pro.ui.screens.utilities.batch.BatchScreen
+import com.fluidscan.pro.ui.screens.utilities.qr.QrScannerScreen
 import com.fluidscan.pro.ui.theme.FluidScanTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,7 +30,8 @@ class MainActivity : ComponentActivity() {
                         DashboardScreen(
                             onOpenScanner = { navController.navigate("scanner") },
                             onOpenEditor = { navController.navigate("editor") },
-                            onOpenOcr = { navController.navigate("ocr") }
+                            onOpenOcr = { navController.navigate("ocr") },
+                            onOpenUtilities = { navController.navigate("utilities") }
                         )
                     }
                     composable("scanner") {
@@ -41,6 +45,19 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("ocr") {
                         OcrScreen(onBack = { navController.popBackStack() })
+                    }
+                    composable("utilities") {
+                        UtilitiesScreen(
+                            onBack = { navController.popBackStack() },
+                            onOpenQr = { navController.navigate("qr") },
+                            onOpenBatch = { navController.navigate("batch") }
+                        )
+                    }
+                    composable("qr") {
+                        QrScannerScreen(onBack = { navController.popBackStack() })
+                    }
+                    composable("batch") {
+                        BatchScreen(onBack = { navController.popBackStack() })
                     }
                 }
             }

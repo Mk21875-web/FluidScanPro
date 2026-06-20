@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.PhotoLibrary
@@ -58,6 +59,7 @@ fun DashboardScreen(
     onOpenScanner: () -> Unit,
     onOpenEditor: () -> Unit,
     onOpenOcr: () -> Unit,
+    onOpenUtilities: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -99,7 +101,8 @@ fun DashboardScreen(
                 DashboardTopBar(
                     state = state,
                     onIntent = viewModel::onIntent,
-                    onImport = { importLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }
+                    onImport = { importLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                    onOpenUtilities = onOpenUtilities
                 )
 
                 Box(Modifier.fillMaxSize().blur(blurRadius)) {
@@ -125,7 +128,8 @@ fun DashboardScreen(
 private fun DashboardTopBar(
     state: DashboardState,
     onIntent: (DashboardIntent) -> Unit,
-    onImport: () -> Unit
+    onImport: () -> Unit,
+    onOpenUtilities: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
@@ -141,6 +145,9 @@ private fun DashboardTopBar(
             )
             IconButton(onClick = onImport) {
                 Icon(Icons.Filled.PhotoLibrary, contentDescription = "Import from gallery")
+            }
+            IconButton(onClick = onOpenUtilities) {
+                Icon(Icons.Filled.Apps, contentDescription = "Utilities")
             }
             IconButton(onClick = { onIntent(DashboardIntent.ToggleViewMode) }) {
                 Icon(
