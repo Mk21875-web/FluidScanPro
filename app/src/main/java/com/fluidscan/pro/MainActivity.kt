@@ -4,6 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.fluidscan.pro.ui.screens.editor.EditorScreen
 import com.fluidscan.pro.ui.screens.scanner.ScannerScreen
 import com.fluidscan.pro.ui.theme.FluidScanTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,8 +19,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FluidScanTheme {
-                // Phase 1 entrypoint — full navigation graph arrives in Phase 3.
-                ScannerScreen(onFinished = { /* Phase 2: hand pages to the PDF editor */ })
+                val navController = rememberNavController()
+                // Minimal Phase 1→2 graph; full graph (dashboard etc.) arrives in Phase 3.
+                NavHost(navController = navController, startDestination = "scanner") {
+                    composable("scanner") {
+                        ScannerScreen(
+                            onFinished = { navController.navigate("editor") }
+                        )
+                    }
+                    composable("editor") {
+                        // Pages are pulled from the scanner→editor handoff (ScanHandoff).
+                        EditorScreen(onBack = { navController.popBackStack() })
+                    }
+                }
             }
         }
     }

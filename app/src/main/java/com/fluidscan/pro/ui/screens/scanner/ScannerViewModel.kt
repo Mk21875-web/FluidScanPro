@@ -5,6 +5,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fluidscan.pro.core.common.DispatcherProvider
+import com.fluidscan.pro.core.common.ScanHandoff
 import com.fluidscan.pro.domain.model.Quadrilateral
 import com.fluidscan.pro.domain.model.ScanFilter
 import com.fluidscan.pro.domain.model.ScanPage
@@ -34,6 +35,7 @@ class ScannerViewModel @Inject constructor(
     private val fileStore: ScanFileStore,
     private val perspective: PerspectiveTransformer,
     private val filters: ImageFilters,
+    private val handoff: ScanHandoff,
     val edgeDetector: EdgeDetector
 ) : ViewModel() {
 
@@ -213,12 +215,14 @@ class ScannerViewModel @Inject constructor(
         }
 
     private fun finish() {
-        val ids = _state.value.capturedPages.map { it.id }
-        if (ids.isEmpty()) {
+        val pages = _state.value.capturedPages
+        if (pages.isEmpty()) {
             emit(ScannerEffect.Error("Capture at least one page first."))
-        } else {
-            emit(ScannerEffect.NavigateToReview(ids))
+            return
         }
+        // Hand the processed page images to the PDF editor (Phase 2).
+        handoff.set(pages.map { it.displayUri }, title = "Scan ${pages.size}p")
+        emit(ScannerEffect.NavigateToReview(pages.map { it.id }))
     }
 
     private fun emit(effect: ScannerEffect) {
