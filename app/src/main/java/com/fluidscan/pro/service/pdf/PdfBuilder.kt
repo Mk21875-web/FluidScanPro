@@ -9,7 +9,7 @@ import com.tom_roush.pdfbox.pdmodel.common.PDRectangle
 import com.tom_roush.pdfbox.pdmodel.encryption.AccessPermission
 import com.tom_roush.pdfbox.pdmodel.encryption.StandardProtectionPolicy
 import com.tom_roush.pdfbox.pdmodel.graphics.image.JPEGFactory
-import com.tom_roush.pdfbox.util.PDFBoxResourceLoader
+import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import javax.inject.Inject
@@ -75,8 +75,8 @@ class PdfBuilder @Inject constructor(
         }
         // Owner == user for a single-password flow.
         val policy = StandardProtectionPolicy(password, password, permissions).apply {
-            encryptionKeyLength = 256
-            preferAES = true
+            setEncryptionKeyLength(256)
+            setPreferAES(true)
         }
         doc.protect(policy)
     }

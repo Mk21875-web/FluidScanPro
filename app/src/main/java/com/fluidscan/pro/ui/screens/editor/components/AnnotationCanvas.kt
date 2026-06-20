@@ -114,7 +114,8 @@ fun AnnotationCanvas(
     }
 }
 
-private fun Offset.normalize(w: Float, h: Float) = Offset((x / w).coerceIn(0f, 1f), (y / h).coerceIn(0f, 1f))
+private fun Offset.normalize(w: Int, h: Int) =
+    Offset((x / w.toFloat()).coerceIn(0f, 1f), (y / h.toFloat()).coerceIn(0f, 1f))
 
 private fun DrawScope.drawInk(points: List<Offset>, color: Color, width: Float, highlighter: Boolean) {
     if (points.isEmpty()) return

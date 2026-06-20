@@ -5,7 +5,8 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("com.google.gms.google-services")
+    // google-services is applied once a real google-services.json is added (Firebase cloud sync, deferred).
+    // id("com.google.gms.google-services")
 }
 
 android {

@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -222,4 +223,4 @@ private fun Modifier.pointerInputReorder(
 private fun Modifier.androidxPointerInput(
     key: Any?,
     block: suspend androidx.compose.ui.input.pointer.PointerInputScope.() -> Unit
-): Modifier = androidx.compose.ui.input.pointer.pointerInput(key, block)
+): Modifier = this.pointerInput(key, block)
