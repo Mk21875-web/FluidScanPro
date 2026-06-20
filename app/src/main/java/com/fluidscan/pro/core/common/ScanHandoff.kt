@@ -17,9 +17,14 @@ class ScanHandoff @Inject constructor() {
     @Volatile var title: String = "Scan"
         private set
 
-    fun set(uris: List<Uri>, title: String) {
+    /** Set when re-opening an existing persisted document, so the editor keeps its identity. */
+    @Volatile var documentId: String? = null
+        private set
+
+    fun set(uris: List<Uri>, title: String, documentId: String? = null) {
         this.pageImageUris = uris
         this.title = title
+        this.documentId = documentId
     }
 
     fun consume(): List<Uri> = pageImageUris.also { pageImageUris = emptyList() }

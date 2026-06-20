@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.fluidscan.pro.ui.screens.dashboard.DashboardScreen
 import com.fluidscan.pro.ui.screens.editor.EditorScreen
 import com.fluidscan.pro.ui.screens.scanner.ScannerScreen
 import com.fluidscan.pro.ui.theme.FluidScanTheme
@@ -20,15 +21,20 @@ class MainActivity : ComponentActivity() {
         setContent {
             FluidScanTheme {
                 val navController = rememberNavController()
-                // Minimal Phase 1→2 graph; full graph (dashboard etc.) arrives in Phase 3.
-                NavHost(navController = navController, startDestination = "scanner") {
+                NavHost(navController = navController, startDestination = "dashboard") {
+                    composable("dashboard") {
+                        DashboardScreen(
+                            onOpenScanner = { navController.navigate("scanner") },
+                            onOpenEditor = { navController.navigate("editor") }
+                        )
+                    }
                     composable("scanner") {
                         ScannerScreen(
                             onFinished = { navController.navigate("editor") }
                         )
                     }
                     composable("editor") {
-                        // Pages are pulled from the scanner→editor handoff (ScanHandoff).
+                        // Pages are pulled from the scanner/import→editor handoff (ScanHandoff).
                         EditorScreen(onBack = { navController.popBackStack() })
                     }
                 }

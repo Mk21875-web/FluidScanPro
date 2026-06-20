@@ -8,8 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.fluidscan.pro.core.common.DispatcherProvider
 import com.fluidscan.pro.core.common.ScanHandoff
 import com.fluidscan.pro.domain.model.Annotation
+import com.fluidscan.pro.domain.model.Document
 import com.fluidscan.pro.domain.model.EditableDocument
 import com.fluidscan.pro.domain.model.EditablePage
+import com.fluidscan.pro.domain.repository.DocumentRepository
 import com.fluidscan.pro.service.pdf.PageFlattener
 import com.fluidscan.pro.service.pdf.PdfBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +32,7 @@ class EditorViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val dispatchers: DispatcherProvider,
     private val handoff: ScanHandoff,
+    private val documents: DocumentRepository,
     private val flattener: PageFlattener,
     private val pdfBuilder: PdfBuilder
 ) : ViewModel() {
@@ -46,7 +49,7 @@ class EditorViewModel @Inject constructor(
     fun onIntent(intent: EditorIntent) {
         when (intent) {
             is EditorIntent.LoadPages -> loadPages(intent.imageUris, intent.title)
-            EditorIntent.LoadFromScan -> loadPages(handoff.consume(), handoff.title)
+            EditorIntent.LoadFromScan -> loadPages(handoff.consume(), handoff.title, handoff.documentId)
             is EditorIntent.SelectTool -> _state.update { it.copy(tool = intent.tool, selectedAnnotationId = null) }
             is EditorIntent.SelectColor -> _state.update { it.copy(colorArgb = intent.argb) }
             is EditorIntent.SetStrokeWidth -> _state.update { it.copy(strokeWidth = intent.width) }
@@ -86,10 +89,17 @@ class EditorViewModel @Inject constructor(
         }
     }
 
-    private fun loadPages(uris: List<Uri>, title: String) {
+    private fun loadPages(uris: List<Uri>, title: String, documentId: String? = null) {
         val pages = uris.map { EditablePage(id = UUID.randomUUID().toString(), imageUri = it) }
         _state.update {
-            it.copy(document = EditableDocument(id = UUID.randomUUID().toString(), title = title, pages = pages), currentPage = 0)
+            it.copy(
+                document = EditableDocument(
+                    id = documentId ?: UUID.randomUUID().toString(),
+                    title = title,
+                    pages = pages
+                ),
+                currentPage = 0
+            )
         }
     }
 
@@ -216,9 +226,26 @@ class EditorViewModel @Inject constructor(
         viewModelScope.launch {
             val result = runCatching { buildPdf(doc) }
             _state.update { it.copy(isExporting = false) }
-            result.onSuccess { emit(EditorEffect.Exported(it)) }
-                .onFailure { emit(EditorEffect.Error("Export failed: ${it.message}")) }
+            result.onSuccess { uri ->
+                persist(doc, uri.toString())
+                emit(EditorEffect.Exported(uri))
+            }.onFailure { emit(EditorEffect.Error("Export failed: ${it.message}")) }
         }
+    }
+
+    /** Save/update the document record so it appears in the dashboard (Phase 3). */
+    private suspend fun persist(doc: EditableDocument, pdfUri: String) {
+        documents.upsert(
+            Document(
+                id = doc.id,
+                title = doc.title,
+                pageUris = doc.pages.map { it.imageUri.toString() },
+                pdfUri = pdfUri,
+                thumbnailUri = doc.pages.firstOrNull()?.imageUri?.toString(),
+                isPasswordProtected = doc.isPasswordProtected,
+                updatedAtEpochMs = System.currentTimeMillis()
+            )
+        )
     }
 
     private suspend fun buildPdf(doc: EditableDocument): Uri = withContext(dispatchers.io) {
