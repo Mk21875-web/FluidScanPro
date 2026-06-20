@@ -98,6 +98,9 @@ Dependency rule: `ui → domain ← data` (domain depends on nothing Android-spe
 
 # Android lint
 ./gradlew :app:lintDebug
+
+# JVM unit tests
+./gradlew :app:testDebugUnitTest
 ```
 
 ### Firebase (optional, deferred)
@@ -107,9 +110,14 @@ plugin is **not applied** until a real `google-services.json` is added. To enabl
 
 ## CI
 
-GitHub Actions ([`.github/workflows/android.yml`](.github/workflows/android.yml)) runs
-`:app:assembleDebug` on every push/PR to `main` and uploads the resulting `app-debug` APK as a
-build artifact. `main` is protected by a ruleset that requires this check to pass before merge.
+GitHub Actions ([`.github/workflows/android.yml`](.github/workflows/android.yml)) runs three
+jobs on every push/PR to `main`:
+
+- **build** — `:app:assembleDebug`, uploads the `app-debug` APK artifact.
+- **lint** — `:app:lintDebug`, uploads the HTML lint report.
+- **test** — `:app:testDebugUnitTest`, uploads the unit-test report.
+
+`main` is protected by a ruleset that requires the `build` and `lint` checks to pass before merge.
 
 ## License
 
