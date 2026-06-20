@@ -52,13 +52,9 @@ class HapticEngine @Inject constructor(
     /** Heavy "seal-press" thud for stamp/signature drop (used in Phase 2). */
     fun sealPress() {
         if (!canVibrate) return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val timings = longArrayOf(0, 18, 40, 55)
-            val amplitudes = intArrayOf(0, 120, 0, 255)
-            vibrator?.vibrate(VibrationEffect.createWaveform(timings, amplitudes, -1))
-        } else {
-            legacy(60)
-        }
+        val timings = longArrayOf(0, 18, 40, 55)
+        val amplitudes = intArrayOf(0, 120, 0, 255)
+        vibrator?.vibrate(VibrationEffect.createWaveform(timings, amplitudes, -1))
     }
 
     /** Success cue when QR/barcode reticle locks (Phase 5). */
@@ -70,11 +66,7 @@ class HapticEngine @Inject constructor(
 
     private fun oneShot(durationMs: Long, amplitude: Int) {
         if (!canVibrate) return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator?.vibrate(VibrationEffect.createOneShot(durationMs, amplitude))
-        } else {
-            legacy(durationMs)
-        }
+        vibrator?.vibrate(VibrationEffect.createOneShot(durationMs, amplitude))
     }
 
     private fun predefinedOrFallback(effectId: Int, fallbackMs: Long, amplitude: Int) {
@@ -90,7 +82,4 @@ class HapticEngine @Inject constructor(
     private fun playPredefined(effectId: Int) {
         vibrator?.vibrate(VibrationEffect.createPredefined(effectId))
     }
-
-    @Suppress("DEPRECATION")
-    private fun legacy(durationMs: Long) = vibrator?.vibrate(durationMs)
 }
